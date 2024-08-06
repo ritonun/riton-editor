@@ -45,9 +45,9 @@ class FileFrame(ttk.Frame):
 
         # filename display
         self.file_name = tk.StringVar(self, current_selected_file)
-        self.file_name_label = ttk.Label(self, textvar=self.file_name)
-        self.file_name_label.grid(row=r+2, column=c)
-
+        # self.file_name_label = ttk.Label(self, textvar=self.file_name)
+        # self.file_name_label.grid(row=r+2, column=c)
+        # showinfo('Selected file', self.file_name.get())
 
 class ExtractFrame(ttk.Frame):
     def __init__(self, container):
@@ -56,6 +56,9 @@ class ExtractFrame(ttk.Frame):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=3)
 
+        self.start_time = tk.StringVar()
+        self.end_time = tk.StringVar()
+
         self._create_widgets()
 
     def _create_widgets(self):
@@ -63,12 +66,29 @@ class ExtractFrame(ttk.Frame):
         ttk.Label(self, text='EXTRACT\n-------').grid(row=0, column=0, columnspan=2)
 
         ttk.Label(self, text='Start time:').grid(row=r+1, column=c)
-        self.start_time_entry = ttk.Entry(self, text='HH:MM:SS')
+        self.start_time_entry = ttk.Entry(self, textvariable=self.start_time)
+        self.start_time_entry.insert(0, 'HH:MM:SS')
         self.start_time_entry.grid(row=r+1, column=c+1)
 
         ttk.Label(self, text='End time:').grid(row=r+2, column=c)
-        self.end_time_entry = ttk.Entry(self, text='HH:MM:SS')
+        self.end_time_entry = ttk.Entry(self, textvariable=self.end_time)
+        self.end_time_entry.insert(0, 'HH:MM:SS')
         self.end_time_entry.grid(row=r+2, column=c+1)
+
+        self.extract_button = ttk.Button(self, text='Extract', command=self._extract)
+        self.extract_button.grid(row=r+3, column=c)
+
+    def _extract(self):
+        start_time = self.start_time_entry.get()
+        end_time = self.end_time_entry.get()
+
+        if start_time == 'HH:MM:SS' or end_time == 'HH:MM:SS':
+            showinfo('Error', message='Please enter a valid start/end time !')
+
+
+        cmd = f'ffmpeg -ss {start_time} -i "{current_selected_file}" -c copy -t {end_time} output.mp4'
+        print(cmd)
+        pass
 
 
 
